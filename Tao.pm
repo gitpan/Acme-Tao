@@ -6,7 +6,7 @@ no strict 'refs';
 
 use vars qw(@messages $VERSION);
 
-$VERSION = 0.02;
+$VERSION = 0.03;
 
 @messages = (
     qq(
@@ -49,7 +49,7 @@ sub import {
             # this is based on the perl 5.6.1 perldoc (perldoc constant)
             # not sure why we have to pass $v through a regex -- otherwise, 
             # it gives us an error that we are trying to modify a constant 
-            # value
+            # value (which might be due to the pos($v) being modified)
 
             $v =~ m{(.*)};
             my $u = $1;
@@ -61,7 +61,7 @@ sub import {
     }
     else {
         if(grep /::Tao$/, keys %constant::declared) {
-            my @isas = $class, @{"${class}::ISA"};
+            my @isas = ($class, @{"${class}::ISA"});
             my $messages;
             while(@isas) {
                 my $c = shift @isas;
@@ -73,6 +73,8 @@ sub import {
                     last;
                 }
             }
+            # randomly determine if we die or not
+            return if rand(rand) < rand(rand);
             die "The Tao is not constant:\n", $messages->[rand @$messages], "\n"
         }
     }
@@ -84,7 +86,7 @@ __END__
 
 =head1 NAME
 
-Acme::Tao - enforce proper respect for the Tao
+Acme::Tao - strongly suggests proper respect for the Tao
 
 =head1 SYNOPSIS
 
@@ -100,12 +102,23 @@ Everyone knows that the Tao is not constant.  But some people just
 might not get it.  To make sure no one tries to use constant Tao 
 in a program with your module, put a C<use Acme::Tao> at the top 
 of your code.  If Tao has been made constant by time your module 
-is used, Acme::Tao will die with a nice message.  Note that the 
+is used, Acme::Tao may die with a nice message.  Note that the 
 package in which Tao is constant is irrelavent.
 
+On a walk between shrines in Nikko, Japan, I had an epiphany:  if the 
+Tao is not constant, than neither should Acme::Tao be constant.
+
+ The Tao doesn't take sides;
+ it gives birth to both wins and losses.
+
+Acme::Tao doesn't take sides either, at least not consistently.  It 
+will sometimes die and sometimes not (50% chance of it doing so), in 
+accordance with its understanding of the nature of the Tao.
+
 As Lao-tzu teaches, "The name that can be named is not the constant 
-name" and Acme::Tao can *also* be used to check for any other 
-symbols you might not want to have as constants.
+name," and Acme::Tao can *also* be used to check for any other 
+symbols you might not want to have as constants.  When used in this 
+fashion, it will always try to work.
 
 For example:
 
@@ -123,7 +136,8 @@ for a constant Tao.
 
 =head1 MESSAGES
 
-The messages are stored in C<@__PACKAGE__::messages>.  Feel free to add to them.  You can even subclass Acme::Tao:
+The messages are stored in C<@__PACKAGE__::messages>.  Feel free to 
+add to them.  You can even subclass Acme::Tao:
 
  package My::Tao;
 
@@ -150,6 +164,7 @@ The messages are lifted from the C<fortune> data files.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2002  James G. Smith.  This module is free software.  
-It may be used, redistributed, and/or modified under the same 
-terms as Perl.
+Copyright (C) 2002, 2004  James G. Smith.  
+
+This module is free software.  It may be used, redistributed, and/or 
+modified under the same terms as Perl.

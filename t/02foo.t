@@ -6,7 +6,7 @@ eval {
 
 package Bar;
 
-use constant foo;
+use constant foo => 1;
 
 package main;
 
@@ -20,7 +20,7 @@ if($@) {
     print "not ok 1\n";
 }
 
-use constant foo;
+use constant foo => 1;
 
 eval {
     Acme::Tao -> import(qw(foo));

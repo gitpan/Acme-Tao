@@ -6,14 +6,19 @@ eval {
 
 use constant Tao;
 
-eval {
-    Acme::Tao -> import;
-};
+my $count = 0;
+while($count < 1000) {
+    eval {
+        Acme::Tao -> import;
+    };
 
-if($@) {
-    print "ok 1\n";
-} else {
-    print "not ok 1\n";
+    if($@) {
+        print "ok 1\n";
+        exit;
+    }
+    $count ++;
 }
+
+print "not ok 1\n" if $count > 999;
 
 exit 0;

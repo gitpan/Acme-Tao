@@ -8,21 +8,30 @@ package Bar;
 
 @ISA = qw(Acme::Tao);
 
-@messages = (qq(BARBARBAR));
+@messages = @messages = (qq(BARBARBAR));
 
 package main;
 
 use constant Tao;
 
-eval {
-    Bar -> import();
-};
+my $count = 0;
+while($count < 1000) {
+    eval {
+        Bar -> import();
+    };
 
-if($@ && $@ =~ m{BARBARBAR}) {
-    print "ok 1\n";
-} else {
-    print "not ok 1\n";
+    if($@) {
+        if($@ =~ m{BARBARBAR}) {
+            print "ok 1\n";
+        }
+        else {
+            print "not ok 1\n";
+        }
+        last;
+    }
+    $count ++;
 }
 
+print "not ok 1\n" if $count > 999;
 
 exit 0;
