@@ -2,10 +2,11 @@ package Acme::Tao;
 
 use constant 1.01;
 use strict;
+no strict 'refs';
 
 use vars qw(@messages $VERSION);
 
-$VERSION = 0.01;
+$VERSION = 0.02;
 
 @messages = (
     qq(
@@ -59,8 +60,21 @@ sub import {
         }
     }
     else {
-        die "The Tao is not constant:\n", $messages[rand @messages], "\n"
-            if grep /::Tao$/, keys %constant::declared;
+        if(grep /::Tao$/, keys %constant::declared) {
+            my @isas = $class, @{"${class}::ISA"};
+            my $messages;
+            while(@isas) {
+                my $c = shift @isas;
+                if(@{"${c}::ISA"}) {
+                    unshift @isas, @{"${c}::ISA"};
+                }
+                if(@{"${c}::messages"}) {
+                    $messages = \@{"${c}::messages"};
+                    last;
+                }
+            }
+            die "The Tao is not constant:\n", $messages->[rand @$messages], "\n"
+        }
     }
 }
 
@@ -78,7 +92,7 @@ Acme::Tao - enforce proper respect for the Tao
 
 or
 
- use Acme::Tao qw($something_that_must_not_be_constant);
+ use Acme::Tao qw(something_that_must_not_be_constant);
 
 =head1 DESCRIPTION
 
@@ -89,10 +103,9 @@ of your code.  If Tao has been made constant by time your module
 is used, Acme::Tao will die with a nice message.  Note that the 
 package in which Tao is constant is irrelavent.
 
-Of course, if all Acme::Tao did was check for attempts to make 
-the Tao constant, it would be a fairly useless module.  So it will 
-also check for any other symbols you might want to not have as
-constants.
+As Lao-tzu teaches, "The name that can be named is not the constant 
+name" and Acme::Tao can *also* be used to check for any other 
+symbols you might not want to have as constants.
 
 For example:
 
@@ -110,7 +123,7 @@ for a constant Tao.
 
 =head1 MESSAGES
 
-The messages are stored in C<@Acme::Tao::messages>.  Feel free to add to them.  You can even subclass Acme::Tao:
+The messages are stored in C<@__PACKAGE__::messages>.  Feel free to add to them.  You can even subclass Acme::Tao:
 
  package My::Tao;
 
@@ -121,16 +134,19 @@ The messages are stored in C<@Acme::Tao::messages>.  Feel free to add to them.  
 
  @messages = ( ... );
 
- push @Acme::Tao::messages, @messages;
-
  1;
  __END__
+
+The messages will come from the appropriate package and are not cumulative.
 
 =head1 AUTHOR
 
 James G. Smith, <jsmith@cpan.org>
 
-I owe Kip Hampton a big thank you for mentioning the idea in passing.
+I owe Kip Hampton a big thank you for mentioning the idea in 
+passing and assisting with parts of the documentation.
+
+The messages are lifted from the C<fortune> data files.
 
 =head1 COPYRIGHT
 

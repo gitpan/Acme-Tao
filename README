@@ -6,7 +6,7 @@ SYNOPSIS
 
     or
 
-     use Acme::Tao qw($something_that_must_not_be_constant);
+     use Acme::Tao qw(something_that_must_not_be_constant);
 
 DESCRIPTION
     Everyone knows that the Tao is not constant. But some people just might
@@ -16,9 +16,9 @@ DESCRIPTION
     with a nice message. Note that the package in which Tao is constant is
     irrelavent.
 
-    Of course, if all Acme::Tao did was check for attempts to make the Tao
-    constant, it would be a fairly useless module. So it will also check for
-    any other symbols you might want to not have as constants.
+    As Lao-tzu teaches, "The name that can be named is not the constant
+    name" and Acme::Tao can *also* be used to check for any other symbols
+    you might not want to have as constants.
 
     For example:
 
@@ -35,7 +35,7 @@ DESCRIPTION
     constant Tao.
 
 MESSAGES
-    The messages are stored in "@Acme::Tao::messages". Feel free to add to
+    The messages are stored in "@__PACKAGE__::messages". Feel free to add to
     them. You can even subclass Acme::Tao:
 
      package My::Tao;
@@ -47,15 +47,19 @@ MESSAGES
 
      @messages = ( ... );
 
-     push @Acme::Tao::messages, @messages;
-
      1;
      __END__
+
+    The messages will come from the appropriate package and are not
+    cumulative.
 
 AUTHOR
     James G. Smith, <jsmith@cpan.org>
 
-    I owe Kip Hampton a big thank you for mentioning the idea in passing.
+    I owe Kip Hampton a big thank you for mentioning the idea in passing and
+    assisting with parts of the documentation.
+
+    The messages are lifted from the "fortune" data files.
 
 COPYRIGHT
     Copyright (C) 2002 James G. Smith. This module is free software. It may
